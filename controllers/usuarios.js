@@ -3,14 +3,18 @@ const Usuario = require('../models/usuario');
 
 
 const usuariosGet = async (req, res) => {
-    // const {q, nombre='no name', apikey, page ="1", limit} = req.query;
-    const {limite=5, page} = req.query;
-    const usuarios = await Usuario.find()
-        .limit(Number(limite))
+    const {limite=5, desde=0} = req.query;
+    const query = {estado: true};
 
-
+    const [total, usuarios]= await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query)
+            .skip(Number(desde))
+            .limit(Number(limite))
+    ]);
 
     res.json({
+        total,
         usuarios
     });
 }
@@ -47,13 +51,17 @@ const usuariosPut = async (req, res) => {
     res.json(usuario);
 }
 
-const usuariosDelete = (req, res) => {
+const usuariosDelete = async (req, res) => {
     const {id} = req.params;
-    res.json({
-        ok: true,
-        message: 'Hola mundo desde una ruta de express delete api - controlador',
-        id
-    });
+
+
+    //borrado fisico
+    // const usuario = await Usuario.findByIdAndDelete(id);
+
+    //borrado logico recomendado para usuarios y papeleras de reciclaje
+    const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+
+    res.json(usuario);
 }
 
 const usuariosPatch = (req, res) => {
