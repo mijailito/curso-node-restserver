@@ -1,16 +1,32 @@
 const express = require('express');
 const Cors = require('cors');
+const {dbConnection}   = require('../database/config');
+const {createAdmin, createRoles} = require('../helpers/initial-setup');
 class Server {
-
+    
     constructor(){
         this.app = express();
         this.port=process.env.PORT;
         this.usuariosPath = '/api/usuarios';
 
+        //conexion a base de datos
+        this.conectarDB();
+
+        //Configuraciones iniciales
+        this.initialSetup();
+
         //Middlewares
         this.middlewares();
         //rutas de la app
         this.routes();
+    }
+    
+    async conectarDB(){
+        await dbConnection();
+    }
+    initialSetup(){
+        createAdmin();
+        createRoles();
     }
 
     middlewares(){
@@ -37,4 +53,4 @@ class Server {
 }
 
 
-module.exports = Server;
+module.exports = Server; 
