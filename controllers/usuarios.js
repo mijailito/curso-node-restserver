@@ -54,14 +54,18 @@ const usuariosPut = async (req, res) => {
 const usuariosDelete = async (req, res) => {
     const {id} = req.params;
 
-
     //borrado fisico
     // const usuario = await Usuario.findByIdAndDelete(id);
 
     //borrado logico recomendado para usuarios y papeleras de reciclaje
     const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+    const usuarioAutenticado = req.usuario;
 
-    res.json(usuario);
+    res.json({
+        ok: true,
+        usuario,
+        usuarioAutenticado
+    });
 }
 
 const usuariosPatch = (req, res) => {
